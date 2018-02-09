@@ -29,6 +29,7 @@ CREATE TABLE [dbo].[Traspaso](
 	[idSucursalRecibe] [int] NULL,
 	[fechaOperacion] [date] NULL,
 	[sitacion] [varchar](10) NULL,
+	[fec_entrada] [date] NULL,
  CONSTRAINT [PK__Traspaso__E4A5F5AA2A164134] PRIMARY KEY CLUSTERED 
 (
 	[idTraspaso] ASC
@@ -36,6 +37,10 @@ CREATE TABLE [dbo].[Traspaso](
 ) ON [PRIMARY]
 
 GO
+
+ALTER TABLE [dbo].[Traspaso] ADD CONSTRAINT DF_Traspaso DEFAULT GETDATE() FOR [fec_entrada]
+GO
+
 
 SET ANSI_PADDING OFF
 GO
