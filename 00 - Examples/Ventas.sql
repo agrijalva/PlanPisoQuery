@@ -1,83 +1,93 @@
 USE [PlanPiso];
--- [GAZM_Concentra].[dbo].[ADE_VTAFI]
+-- [GAAU].[dbo].[ADE_VTAFI]
+-- SELECT TOP 10 * FROM [GAAU_Universidad].[dbo].[ADE_VTAFI]
+-- SELECT * FROM [GAAU_Universidad].[dbo].[ADE_VTAFI] WHERE VTE_SERIE = 'TSMYE21S2GM261392' AND VTE_STATUS = 'I'
 BEGIN TRY
-	DECLARE @idEmpresa INT = 4;
-	DECLARE @VinDocumentos TABLE( Id INT IDENTITY, idEmpresa INT, VIN VARCHAR(17), Documento VARCHAR(20) );
+	DECLARE @idEmpresa INT = 1
 
-	INSERT INTO @VinDocumentos
-	SELECT idEmpresa, CCP_OBSGEN as VIN, CCP_IDDOCTO FROM Documentos WHERE CCP_IDDOCTO LIKE '%-%-%-%-%-%' AND CCP_OBSGEN != '' AND idEmpresa = @idEmpresa
-	UNION
-	SELECT idEmpresa, CCP_IDDOCTO as VIN, CCP_IDDOCTO FROM Documentos WHERE CCP_IDDOCTO NOT LIKE '%-%-%-%-%-%' AND LEN( CCP_IDDOCTO ) = 17  AND idEmpresa = @idEmpresa
-	UNION
-	SELECT idEmpresa, SUBSTRING( CCP_IDDOCTO, 1, 17 ) as VIN, CCP_IDDOCTO FROM Documentos WHERE CCP_IDDOCTO NOT LIKE '%-%-%-%-%-%' AND LEN( CCP_IDDOCTO ) = 19 AND idEmpresa = @idEmpresa
-	UNION
-	SELECT idEmpresa, CCP_OBSGEN as VIN, CCP_IDDOCTO FROM Documentos WHERE CCP_IDDOCTO NOT LIKE '%-%-%-%-%-%' AND LEN( CCP_IDDOCTO ) < 17 AND CCP_OBSGEN != '' AND idEmpresa = @idEmpresa
-	UNION
-	SELECT idEmpresa, SUBSTRING( CCP_IDDOCTO, 2, 17 ) as VIN, CCP_IDDOCTO FROM Documentos WHERE CCP_IDDOCTO NOT LIKE '%-%-%-%-%-%' AND LEN( CCP_IDDOCTO ) = 18 AND idEmpresa = @idEmpresa
+	DECLARE @VinDocumentos TABLE( Id INT IDENTITY, idEmpresa INT, idSucursal INT, VIN VARCHAR(17), Documento VARCHAR(20) );
+	INSERT INTO @VinDocumentos EXECUTE [OBTIENEVIN_SP] @idEmpresa;
+	
+	--SELECT * FROM @VinDocumentos;
 	
 	DECLARE @Current INT, @Max INT;
 	SELECT @Current = MIN( Id ), @Max = MAX(Id) FROM @VinDocumentos;
 	
+	-- SET @Max = 50;
+	
+	
 	DECLARE @VIN VARCHAR(17) = '',
-			@Documento VARCHAR(20);
+			@idSucursal INT = 0,
+			@Documento VARCHAR(20) = '';
 	
 	DECLARE @tableConf  TABLE(idEmpresa INT, idSucursal INT, servidor VARCHAR(250), baseConcentra VARCHAR(250), sqlCmd VARCHAR(8000), cargaDiaria VARCHAR(8000));
 	INSERT INTO @tableConf Execute [dbo].[SEL_ACTIVE_DATABASES_SP];
-	DECLARE @Traspasos TABLE( idTraspasoLocal INT IDENTITY, idTraspaso INT, VIN VARCHAR(17), idSucursalEnvia VARCHAR(100), idSucursalRecibe VARCHAR(100), fechaOperacion DATE, sitacion VARCHAR(10) );
-	DECLARE @BaseConcentra VARCHAR(100);
+	
+	DECLARE @Ventas TABLE(
+		Id INT IDENTITY,
+		VTE_TIPODOCTO varchar(10),
+		VTE_DOCTO varchar(20),
+		VTE_IDCLIENTE numeric(18, 0),
+		VTE_FECHDOCTO varchar(10),
+		VTE_HORADOCTO varchar(5),
+		VTE_REFERENCIA1 varchar(50),
+		VTE_FORMAPAGO varchar(10),
+		VTE_VTABRUT decimal(18, 5),
+		VTE_IVA decimal(18, 5),
+		VTE_TOTAL decimal(18, 5),
+		VTE_SERIE varchar(17),
+		VTE_CVEUSU varchar(10),
+		VTE_FECHOPE varchar(10),
+		VTE_IVADESG varchar(1),
+		VTE_IVAPLICADO varchar(10),
+		VTE_TIPO varchar(10),
+		VTE_CONSECUTIVO numeric(18, 0),
+		VTE_ANNO varchar(4),
+		VTE_MES numeric(18, 0),
+		idEmpresa INT,
+		idSucursal INT
+	);
+	
+	DECLARE @BaseSucursal VARCHAR(100);
 	DECLARE @aux VARCHAR(MAX) = '';
+	
+	
 	
 	WHILE ( @Current <= @Max )
 		BEGIN			
-			SELECT @VIN = VIN, @Documento = Documento FROM @VinDocumentos WHERE Id = @Current;
+			SELECT @VIN = VIN, @Documento = Documento, @idSucursal = idSucursal FROM @VinDocumentos WHERE Id = @Current;
 
 			SET NOCOUNT ON;
 			
-			SET @BaseConcentra  = (SELECT TOP 1 baseConcentra FROM @tableConf WHERE idEmpresa = @idEmpresa);
+			SET @BaseSucursal = (SELECT servidor FROM @tableConf WHERE idEmpresa = @idEmpresa AND idSucursal = @idSucursal);
 			
-			SET @aux = 
-					'SELECT 
-						idTraspaso		 = TRA_NUMTRASPASO, 
-						VIN				 = TRA_NUMSERIE, 
-						idSucursalEnvia  = TRA_SUCENVIA, 
-						idSucursalRecibe = TRA_SUCRECIBE, 
-						fechaOperacion   = TRA_FECHOPE, 
-						sitacion		 = TRA_SITUACION
-					FROM '+ @BaseConcentra +'.UNI_TRASPASOS 
-					WHERE TRA_NUMSERIE  = '''+ @VIN +''' 
-					ORDER BY TRA_NUMTRASPASO DESC;';
-
-			INSERT INTO @Traspasos
+			
+	--		-- SELECT * FROM [GAAU_Universidad].[dbo].[ADE_VTAFI]
+			
+			
+			SET @aux ='SELECT 
+							VTE_TIPODOCTO,		VTE_DOCTO,			VTE_IDCLIENTE,	VTE_FECHDOCTO,
+							VTE_HORADOCTO,		VTE_REFERENCIA1,	VTE_FORMAPAGO,	VTE_VTABRUT,
+							VTE_IVA,			VTE_TOTAL,			VTE_SERIE,		VTE_CVEUSU,
+							VTE_FECHOPE,		VTE_IVADESG,		VTE_IVAPLICADO,	VTE_TIPO,
+							VTE_CONSECUTIVO,	VTE_ANNO,			VTE_MES,
+							idEmpresa = ' + CONVERT( VARCHAR(3), @idEmpresa ) + ',
+							idSucursal = ' + CONVERT( VARCHAR(3), @idSucursal ) + '
+						FROM '+ @BaseSucursal +'.[ADE_VTAFI] 
+						WHERE VTE_SERIE  = '''+ @VIN +'''
+							  AND VTE_STATUS = ''I'';';
+					
+	
+			INSERT INTO @Ventas
 			EXECUTE( @aux );
 			
-			-- SELECT * FROM @Traspasos TEMP LEFT JOIN Traspaso TRA ON TRA.TRA_NUMTRASPASO = TEMP.idTraspaso WHERE TRA.TRA_NUMTRASPASO IS NULL
-			IF EXISTS( SELECT * FROM @Traspasos TEMP LEFT JOIN Traspaso TRA ON TRA.TRA_NUMTRASPASO = TEMP.idTraspaso WHERE TRA.TRA_NUMTRASPASO IS NULL )
-				BEGIN
-					DECLARE @idSucursalRecibe VARCHAR( 25 ) = ( SELECT TOP 1 idSucursalRecibe FROM @Traspasos ORDER BY idTraspaso DESC );
-					
-					UPDATE Documentos 
-					SET idSucursal = (SELECT idSucursal FROM @tableConf WHERE servidor LIKE '%' + @idSucursalRecibe + '%')
-					WHERE CCP_IDDOCTO = @Documento;
-				END
-			
-			INSERT INTO Traspaso(idEmpresa, TRA_NUMTRASPASO, VIN, CCP_IDDOCTO, idSucursalEnvia, idSucursalRecibe, fechaOperacion, sitacion)
-			SELECT  idEmpresa = @idEmpresa,
-					TEMP.idTraspaso,
-					TEMP.VIN,
-					CCP_IDDOCTO = @Documento,
-					idSucursalEnvia  = (SELECT idSucursal FROM @tableConf WHERE servidor LIKE '%' + TEMP.idSucursalEnvia + '%'),
-					idSucursalRecibe = (SELECT idSucursal FROM @tableConf WHERE servidor LIKE '%' + TEMP.idSucursalRecibe + '%'),
-					TEMP.fechaOperacion,
-					TEMP.sitacion
-			FROM @Traspasos TEMP
-			LEFT JOIN Traspaso TRA ON TRA.TRA_NUMTRASPASO = TEMP.idTraspaso
-			WHERE TRA.TRA_NUMTRASPASO IS NULL;
-			
-			
-			DELETE FROM @Traspasos;
 			
 			SET @Current = @Current + 1;
-		END
+	END
+	
+	SELECT * FROM @Ventas;
+			
+	-- DELETE FROM @Ventas;
 	
 END TRY
 BEGIN CATCH
