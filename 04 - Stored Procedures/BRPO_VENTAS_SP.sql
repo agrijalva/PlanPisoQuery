@@ -1,9 +1,18 @@
-USE [PlanPiso];
--- [GAAU].[dbo].[ADE_VTAFI]
--- SELECT TOP 10 * FROM [GAAU_Universidad].[dbo].[ADE_VTAFI]
--- SELECT * FROM [GAAU_Universidad].[dbo].[ADE_VTAFI] WHERE VTE_SERIE = 'TSMYE21S2GM261392' AND VTE_STATUS = 'I'
-BEGIN TRY
-	DECLARE @idEmpresa INT = 1
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Ing. Alejandro Grijalva Antonio
+-- Create date: 2018-02-09
+-- Description:	Monitoreo de Ventas de Unidades
+-- [dbo].[BRPO_VENTAS_SP] 4
+-- =============================================
+ALTER PROCEDURE [dbo].[BRPO_VENTAS_SP]
+	@idEmpresa INT = 1
+AS
+BEGIN
+	BEGIN TRY
 
 	DECLARE @VinDocumentos TABLE( Id INT IDENTITY, idEmpresa INT, idSucursal INT, VIN VARCHAR(17), Documento VARCHAR(20) );
 	INSERT INTO @VinDocumentos EXECUTE [OBTIENEVIN_SP] @idEmpresa;
@@ -109,3 +118,5 @@ END TRY
 BEGIN CATCH
 	SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage;
 END CATCH
+END
+GO
