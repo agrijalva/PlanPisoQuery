@@ -1,0 +1,47 @@
+USE [PlanPiso]
+GO
+
+/****** Object:  View [dbo].[VINDOCUMENTOS_VIEW]    Script Date: 02/12/2018 16:59:45 ******/
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[VINDOCUMENTOS_VIEW]'))
+DROP VIEW [dbo].[VINDOCUMENTOS_VIEW]
+GO
+
+USE [PlanPiso]
+GO
+
+/****** Object:  View [dbo].[VINDOCUMENTOS_VIEW]    Script Date: 02/12/2018 16:59:46 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VINDOCUMENTOS_VIEW] AS
+SELECT idEmpresa, idSucursal, CCP_OBSGEN as VIN, CCP_IDDOCTO 
+FROM Documentos 
+WHERE	CCP_IDDOCTO LIKE '%-%-%-%-%-%' 
+		AND CCP_OBSGEN != '' 
+UNION
+SELECT idEmpresa, idSucursal, CCP_IDDOCTO as VIN, CCP_IDDOCTO 
+FROM Documentos 
+WHERE	CCP_IDDOCTO NOT LIKE '%-%-%-%-%-%' 
+		AND LEN( CCP_IDDOCTO ) = 17  
+UNION
+SELECT idEmpresa, idSucursal, SUBSTRING( CCP_IDDOCTO, 1, 17 ) as VIN, CCP_IDDOCTO 
+FROM Documentos 
+WHERE	CCP_IDDOCTO NOT LIKE '%-%-%-%-%-%' 
+		AND LEN( CCP_IDDOCTO ) = 19 
+UNION
+SELECT idEmpresa, idSucursal, CCP_OBSGEN as VIN, CCP_IDDOCTO 
+FROM Documentos 
+WHERE	CCP_IDDOCTO NOT LIKE '%-%-%-%-%-%' 
+		AND LEN( CCP_IDDOCTO ) < 17 
+		AND CCP_OBSGEN != '' 
+UNION
+SELECT idEmpresa, idSucursal, SUBSTRING( CCP_IDDOCTO, 2, 17 ) as VIN, CCP_IDDOCTO 
+FROM Documentos 
+WHERE	CCP_IDDOCTO NOT LIKE '%-%-%-%-%-%' 
+		AND LEN( CCP_IDDOCTO ) = 18 
+GO
+
+
