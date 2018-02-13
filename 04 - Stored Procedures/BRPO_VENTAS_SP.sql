@@ -15,7 +15,8 @@ BEGIN
 	BEGIN TRY
 
 	DECLARE @VinDocumentos TABLE( Id INT IDENTITY, idEmpresa INT, idSucursal INT, VIN VARCHAR(17), Documento VARCHAR(20) );
-	INSERT INTO @VinDocumentos EXECUTE [OBTIENEVIN_SP] @idEmpresa;
+	INSERT INTO @VinDocumentos 
+	SELECT * FROM [dbo].[VINDOCUMENTOS_VIEW] WHERE idEmpresa = @idEmpresa;
 	
 	DECLARE @Current INT, @Max INT;
 	SELECT @Current = MIN( Id ), @Max = MAX(Id) FROM @VinDocumentos;
