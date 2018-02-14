@@ -71,8 +71,8 @@ BEGIN
 								VTE_CONSECUTIVO,	VTE_ANNO,			VTE_MES
 								
 							FROM '+ @BaseSucursal +'.[ADE_VTAFI] 
-							WHERE VTE_SERIE  = '''+ @VIN +'''
-								  AND VTE_STATUS = ''I'';';
+							WHERE VTE_SERIE  = '''+ @VIN +''';';
+								  -- AND VTE_STATUS = ''I'';';
 						
 				INSERT INTO @Ventas
 				EXECUTE( @aux );
@@ -80,6 +80,46 @@ BEGIN
 				SET @Current = @Current + 1;
 		END
 		
+		-- Guardamos en temporal para actualizar en 0 en Movimientos
+		SELECT
+			CCP_IDDOCTO			= TEMP.CCP_IDDOCTO,
+			VIN					= TEMP.VTE_SERIE,
+			usuarioID			= 0,
+			empresaID			= TEMP.idEmpresa,
+			idSucursalEnvia		= TEMP.idSucursal,
+			idSucursalRecibe	= NULL,
+			financieraID		= MOV.financieraID,
+			esquemaID			= MOV.esquemaID,
+			fecha				= TEMP.VTE_FECHDOCTO,
+			monto				= 0,
+			active				= 1,
+			tipoMovimientoId	= 5,
+			genericID			= TEMP.VTE_CONSECUTIVO,
+			fecha_originar		= TEMP.VTE_FECHDOCTO
+		INTO #VentasActivo
+		FROM @Ventas TEMP
+		LEFT JOIN Venta VEN ON VEN.idEmpresa			= TEMP.idEmpresa
+								AND VEN.idSucursal		= TEMP.idSucursal
+								AND VEN.CCP_IDDOCTO		= TEMP.CCP_IDDOCTO
+								AND VEN.VTE_DOCTO		= TEMP.VTE_DOCTO
+								AND VEN.VTE_IDCLIENTE	= TEMP.VTE_IDCLIENTE
+								AND VEN.VTE_FECHDOCTO	= TEMP.VTE_FECHDOCTO
+								AND VEN.VTE_HORADOCTO	= TEMP.VTE_HORADOCTO
+								AND VEN.VTE_SERIE		= TEMP.VTE_SERIE
+		INNER JOIN Movimiento MOV ON MOV.CCP_IDDOCTO = TEMP.CCP_IDDOCTO AND active = 1
+		WHERE VEN.VTE_DOCTO IS NULL;
+		
+		-- Se actualiza los "active" de los movimientos que quedan como historicos
+		UPDATE MOV
+		SET active = 0
+		FROM #VentasActivo TEMP
+		INNER JOIN Movimiento MOV ON TEMP.CCP_IDDOCTO = MOV.CCP_IDDOCTO;
+		
+		-- Guardamos en temporal los Activos de las Ventas
+		INSERT INTO Movimiento
+		SELECT * FROM #VentasActivo TEMP;
+		
+		-- Insercion en la tabla Ventas
 		INSERT INTO Venta(
 			idEmpresa,			idSucursal,			CCP_IDDOCTO,
 			VTE_TIPODOCTO,		VTE_DOCTO,			VTE_IDCLIENTE,	VTE_FECHDOCTO,
@@ -88,7 +128,7 @@ BEGIN
 			VTE_FECHOPE,		VTE_IVADESG,		VTE_IVAPLICADO,	VTE_TIPO,
 			VTE_CONSECUTIVO,	VTE_ANNO,			VTE_MES
 		)
-		SELECT	
+		SELECT
 			TEMP.idEmpresa,			TEMP.idSucursal,		TEMP.CCP_IDDOCTO,
 			TEMP.VTE_TIPODOCTO,		TEMP.VTE_DOCTO,			TEMP.VTE_IDCLIENTE,		TEMP.VTE_FECHDOCTO,
 			TEMP.VTE_HORADOCTO,		TEMP.VTE_REFERENCIA1,	TEMP.VTE_FORMAPAGO,		TEMP.VTE_VTABRUT,
@@ -96,7 +136,7 @@ BEGIN
 			TEMP.VTE_FECHOPE,		TEMP.VTE_IVADESG,		TEMP.VTE_IVAPLICADO,	TEMP.VTE_TIPO,
 			TEMP.VTE_CONSECUTIVO,	TEMP.VTE_ANNO,			TEMP.VTE_MES
 		FROM @Ventas TEMP
-		LEFT JOIN Venta VEN ON VEN.idEmpresa		= TEMP.idEmpresa
+		LEFT JOIN Venta VEN ON VEN.idEmpresa			= TEMP.idEmpresa
 								AND VEN.idSucursal		= TEMP.idSucursal
 								AND VEN.CCP_IDDOCTO		= TEMP.CCP_IDDOCTO
 								AND VEN.VTE_DOCTO		= TEMP.VTE_DOCTO
@@ -105,6 +145,7 @@ BEGIN
 								AND VEN.VTE_HORADOCTO	= TEMP.VTE_HORADOCTO
 								AND VEN.VTE_SERIE		= TEMP.VTE_SERIE
 		WHERE VEN.VTE_DOCTO IS NULL;
+		
 	END TRY
 	BEGIN CATCH
 		SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage;
