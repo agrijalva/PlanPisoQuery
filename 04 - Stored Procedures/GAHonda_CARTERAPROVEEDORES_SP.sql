@@ -16,7 +16,7 @@ BEGIN
 		SET NOCOUNT ON;
 		
 		DECLARE @idEmpresa INT		= 3;
-		DECLARE @Fecha VARCHAR(10)	= CONVERT (date, GETDATE());
+		DECLARE @Fecha DATETIME		= CONVERT (date, GETDATE());
 		
 
 		SELECT
@@ -62,7 +62,7 @@ BEGIN
 				  + substring('0000000000',1,10-len(convert(varchar,NUEVO.ccp_conscartera))) + convert(varchar,NUEVO.ccp_conscartera)
 
 
-		DELETE FROM #BI_CARTERA_PLP WHERE convert(Datetime,ccp_fechaDOCTO,103) > convert(Datetime,@Fecha,103) 
+		DELETE FROM #BI_CARTERA_PLP WHERE convert(Datetime,CCP_FECHADOCTO,103) > @Fecha;
 
 		SELECT 
 			idEmpresa			= @idEmpresa,
