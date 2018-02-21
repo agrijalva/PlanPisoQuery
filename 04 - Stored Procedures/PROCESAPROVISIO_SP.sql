@@ -58,14 +58,15 @@ BEGIN
 				[pld_idpersona]			= 0,
 				[pld_iddocumento]		= CCP_DOCUMENTO,
 				[pld_tipodocumento]		= 1,
-				[pld_vin]				= '9786543243567',
+				[pld_vin]				= V.VIN,
 				[pld_fechavencimiento]	= GETDATE(),
 				[pld_porcentajeiva]		= 16,
 				[pld_afecta]			= '1',
 				[idProvision]			= idProvision
-			FROM Provision 
+			FROM Provision P
+			LEFT JOIN VINDOCUMENTOS_VIEW V ON P.CCP_DOCUMENTO = V.CCP_IDDOCTO
 			WHERE consecutivo = @conse 
-				  AND idSucursal = @idSucursalActual;
+				  AND P.idSucursal = @idSucursalActual;
 				  
 			UPDATE Provision SET estatus = 2 WHERE consecutivo = @conse AND idSucursal = @idSucursalActual;
 			SET @sucCurrent = @sucCurrent + 1;
