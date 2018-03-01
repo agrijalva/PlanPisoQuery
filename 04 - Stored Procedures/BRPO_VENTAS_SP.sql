@@ -53,7 +53,9 @@ BEGIN
 		);
 		
 		DECLARE @BaseSucursal VARCHAR(100);
+		DECLARE @fecha VARCHAR(100);
 		DECLARE @aux VARCHAR(MAX) = '';
+		SET @fecha = (SELECT par_DatVal FROM [dbo].[Parametros] WHERE idEmpresa = @idEmpresa AND par_grupo = 'CARTE');
 		
 		WHILE ( @Current <= @Max )
 			BEGIN			
@@ -69,10 +71,8 @@ BEGIN
 								VTE_IVA,			VTE_TOTAL,			VTE_SERIE,		VTE_CVEUSU,
 								VTE_FECHOPE,		VTE_IVADESG,		VTE_IVAPLICADO,	VTE_TIPO,
 								VTE_CONSECUTIVO,	VTE_ANNO,			VTE_MES
-								
 							FROM '+ @BaseSucursal +'.[ADE_VTAFI] 
-							WHERE VTE_SERIE  = '''+ @VIN +''';';
-								  -- AND VTE_STATUS = ''I'';';
+							WHERE VTE_SERIE  = '''+ @VIN +''' AND VTE_FECHOPE >= CONVERT( DATE, '''+ @fecha +''' );';
 						
 				INSERT INTO @Ventas
 				EXECUTE( @aux );
@@ -115,7 +115,7 @@ BEGIN
 		FROM #VentasActivo TEMP
 		INNER JOIN Movimiento MOV ON TEMP.CCP_IDDOCTO = MOV.CCP_IDDOCTO;
 		
-		-- Guardamos en temporal los Activos de las Ventas
+		-- Se registran en Movimiento los registros encontrados
 		INSERT INTO Movimiento
 		SELECT * FROM #VentasActivo TEMP;
 		
