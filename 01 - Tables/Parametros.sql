@@ -22,7 +22,7 @@ GO
 CREATE TABLE [dbo].[Parametros](
 	[idParametro] [int] IDENTITY(1,1) NOT NULL,
 	[par_grupo] [varchar](5) NULL,
-	[par_identificado] [varchar](25) NULL,
+	[par_identificador] [varchar](25) NULL,
 	[par_descripcion] [varchar](500) NULL,
 	[par_StrVal] [varchar](250) NULL,
 	[par_IntVal] [numeric](18,0) NULL,
@@ -42,14 +42,17 @@ SET ANSI_PADDING OFF
 GO
 
 
-INSERT INTO [dbo].[Parametros]( [par_grupo], [par_identificado], [par_descripcion], [par_DatVal], [idEmpresa], [idSucursal] )
-VALUES( 'CARTE', 'GAAU_FCarga','Fecha base para busqueda de Eventos en BPRO Suzuki', '20180201', 1, 0 );
+INSERT INTO [dbo].[Parametros]( [par_grupo], [par_identificador], [par_descripcion], [par_DatVal], [idEmpresa], [idSucursal] )
+VALUES( 'CARTE', 'GAAU_FCarga','Fecha base para busqueda de Eventos en BPRO Suzuki', '20180101', 1, 0 );
 
-INSERT INTO [dbo].[Parametros]( [par_grupo], [par_identificado], [par_descripcion], [par_DatVal], [idEmpresa], [idSucursal] )
-VALUES( 'CARTE', 'GAAT_FCarga','Fecha base para busqueda de Eventos en BPRO Peugeot', '20180201', 2, 0 );
+INSERT INTO [dbo].[Parametros]( [par_grupo], [par_identificador], [par_descripcion], [par_DatVal], [idEmpresa], [idSucursal] )
+VALUES( 'CARTE', 'GAAT_FCarga','Fecha base para busqueda de Eventos en BPRO Peugeot', '20180101', 2, 0 );
 
-INSERT INTO [dbo].[Parametros]( [par_grupo], [par_identificado], [par_descripcion], [par_DatVal], [idEmpresa], [idSucursal] )
-VALUES( 'CARTE', 'GAHonda_FCarga','Fecha base para busqueda de Eventos en BPRO Honda', '20180201', 3, 0 );
+INSERT INTO [dbo].[Parametros]( [par_grupo], [par_identificador], [par_descripcion], [par_DatVal], [idEmpresa], [idSucursal] )
+VALUES( 'CARTE', 'GAHonda_FCarga','Fecha base para busqueda de Eventos en BPRO Honda', '20180101', 3, 0 );
 
-INSERT INTO [dbo].[Parametros]( [par_grupo], [par_identificado], [par_descripcion], [par_DatVal], [idEmpresa], [idSucursal] )
-VALUES( 'CARTE', 'GAZM_FCarga','Fecha base para busqueda de Eventos en BPRO Nissan', '20180201', 4, 0 );
+INSERT INTO [dbo].[Parametros]( [par_grupo], [par_identificador], [par_descripcion], [par_DatVal], [idEmpresa], [idSucursal] )
+VALUES( 'CARTE', 'GAZM_FCarga','Fecha base para busqueda de Eventos en BPRO Nissan', '20180101', 4, 0 );
+
+INSERT INTO [dbo].[Parametros]( [par_grupo], [par_identificador], [par_descripcion], [par_IntVal], [idEmpresa], [idSucursal] )
+VALUES( 'NOTIF', 'ExpirationDay','Días para determinar notificaciones de vigencias', 10, 0, 0 );
