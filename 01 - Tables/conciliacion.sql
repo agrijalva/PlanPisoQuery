@@ -21,6 +21,7 @@ CREATE TABLE [dbo].[conciliacion](
 	[idEmpresa] [int] NULL,
 	[idFinanciera] [int] NULL,
 	[periodo] [int] NULL,
+	[anio] [numeric](4,0) NULL,
 	[idUsuario] [int] NULL,
 	[fechaCreacion] [datetime] NULL,
 	[estatus] [int] NULL,

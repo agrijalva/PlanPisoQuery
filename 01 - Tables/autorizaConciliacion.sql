@@ -21,6 +21,9 @@ GO
 
 CREATE TABLE [dbo].[autorizaConciliacion](
 	[idAutorizaConciliacion] [int] IDENTITY(1,1) NOT NULL,
+	[idFinanciera] [int] NULL,
+	[periodoContable] [int] NULL,
+	[anio] [numeric](4,0) NULL,
 	[consecutivo] [int] NULL,
 	[estatus] [int] NULL,
 	[idUsuarioSolicita] [int] NULL,

@@ -11,13 +11,15 @@ ALTER PROCEDURE [dbo].[CREACONCILIACION_SP]
 	@idEmpresa INT		= 0,
 	@idFinanciera INT	= 0,
 	@periodo INT		= 0,
+	@periodoAnio INT	= 0,
 	@idUsuario INT		= 0
 AS
 BEGIN
-	INSERT INTO [dbo].[conciliacion]([idEmpresa],[idFinanciera],[periodo],[idUsuario],[fechaCreacion],[estatus])
+	INSERT INTO [dbo].[conciliacion]([idEmpresa],[idFinanciera],[periodo],[anio],[idUsuario],[fechaCreacion],[estatus])
 	SELECT  [idEmpresa]		= @idEmpresa,
 			[idFinanciera]	= @idFinanciera,
 			[periodo]		= @periodo,
+			[anio]			= @periodoAnio,
 			[idUsuario]		= @idUsuario,
 			[fechaCreacion] = GETDATE(),
 			[estatus]		= 1;

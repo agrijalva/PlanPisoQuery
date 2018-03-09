@@ -1,6 +1,6 @@
 DECLARE @periodo INT = 2;
 
-SELECT 
+SELECT 	
 	movimientoID	= MOV.movimientoID,
 	porcentajeTiie	= 0,
 	monto			= CONCILIA.interesAjuste,
@@ -22,13 +22,14 @@ WHERE active = 1;
 
 -- UPDATE Interes SET estatusID = 5 WHERE MONTH(INT.fecha) = @periodo AND INT.estatusID = 3
 
-SELECT 
+SELECT
+	[ple_idplanpiso],
     [pro_idtipoproceso] = 4,
     [ple_idempresa],
     [ple_idsucursal],
     [ple_tipopoliza],
     [ple_fechapoliza] = GETDATE(),
-    [ple_concepto] = 'CANCALACIÓN ' + [ple_concepto],
+    [ple_concepto] = [ple_concepto],
     [ple_fechageneracion],
     [ple_conspol],
     [ple_mes],
@@ -40,7 +41,7 @@ SELECT
     [ple_idplanpiso] = 0,
     [pld_consecutivo],
     [pld_numcuenta],
-    [pld_concepto] = 'CANCELACIÓN ' + [pld_concepto],
+    [pld_concepto] = [pld_concepto],
     [pld_cargo] = [pld_abono],
     [pld_abono] = [pld_cargo],
     [pld_idpersona],
@@ -54,3 +55,44 @@ SELECT
 FROM plp_planpisodet DET
 INNER JOIN plp_planpisoenc ENC ON DET.ple_idplanpiso = ENC.ple_idplanpiso
 WHERE pro_idtipoproceso = 3 AND MONTH(ple_fechapoliza) = @periodo;
+
+
+SELECT
+	CON.idConciliacion,
+	CON.idEmpresa,
+	CON.idFinanciera,
+	POL.planpisoID,
+	CON.periodo,
+	CON.anio,
+	CON.estatus,
+	DET.CCP_IDDOCTO,
+	DET.VIN,
+	DET.interesGrupoAndrade,
+	DET.interesFinanciera,
+	DET.interesAjuste,
+	DET.situacion
+FROM conciliacion CON
+INNER JOIN conciliacionDetalle DET ON CON.idConciliacion = DET.idConciliacion
+INNER JOIN [PlanPiso].[dbo].[relPolizasCierreMes] POL ON DET.CCP_IDDOCTO = POL.CCP_IDDOCTO
+WHERE CON.periodo = 2 AND CON.anio = 2018 AND situacion IN (1,2)
+
+SELECT * FROM [PlanPiso].[dbo].[relPolizasCierreMes]
+
+SELECT * FROM dbo.plp_planpisoenc
+SELECT * FROM dbo.plp_planpisodet
+
+-- UPDATE [PlanPiso].[dbo].[relPolizasCierreMes] SET mes = 2
+
+--SELECT * FROM conciliacion
+--SELECT * FROM conciliacionDetalle
+--SELECT * FROM TmpExcelData
+--SELECT * FROM autorizaConciliacion
+
+-- UPDATE autorizaConciliacion SET estatus = 2
+
+
+--TRUNCATE TABLE conciliacion
+--TRUNCATE TABLE conciliacionDetalle
+--TRUNCATE TABLE TmpExcelData
+--TRUNCATE TABLE autorizaConciliacion
+
