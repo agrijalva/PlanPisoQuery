@@ -23,6 +23,7 @@ CREATE TABLE [dbo].[Provision](
 	[idProvision] [numeric](18, 0) IDENTITY(1,1) NOT NULL,
 	[idEmpresa] [int] NULL,
 	[idSucursal] [int] NULL,
+	[idFinanciera] [int] NULL,
 	[CCP_DOCUMENTO] [varchar](20) NULL,
 	[consecutivo] [numeric](18, 0) NULL,
 	[saldoDocumento] [numeric](18, 4) NULL,

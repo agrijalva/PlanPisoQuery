@@ -96,10 +96,14 @@ SELECT * FROM dbo.plp_planpisodet
 
 --DELETE FROM plp_planpisoenc WHERE ple_idplanpiso > 5
 --DELETE FROM plp_planpisodet WHERE ple_idplanpiso > 5
---TRUNCATE TABLE conciliacion
---TRUNCATE TABLE conciliacionDetalle
---TRUNCATE TABLE TmpExcelData
---TRUNCATE TABLE autorizaConciliacion
---TRUNCATE TABLE relPolizasCierreMes
+TRUNCATE TABLE conciliacion
+TRUNCATE TABLE conciliacionDetalle
+TRUNCATE TABLE TmpExcelData
+TRUNCATE TABLE autorizaConciliacion
+TRUNCATE TABLE relPolizasCierreMes
+
+SELECT * FROM GAAU_Concentra..UNI_TRASPASOS WHERE TRA_NUMTRASPASO = 1522
 
 
+-- SELECT * FROM plp_planpisoenc
+TRUNCATE TABLE Provision

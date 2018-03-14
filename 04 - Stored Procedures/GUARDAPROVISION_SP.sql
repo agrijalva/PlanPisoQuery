@@ -11,6 +11,7 @@ GO
 ALTER PROCEDURE [dbo].[GUARDAPROVISION_SP]
 	@idEmpresa INT					= 0,
 	@idSucursal INT					= 0,
+	@idFinanciera INT				= 0,
 	@CCP_IDDOCTO VARCHAR(20)		= '',
 	@consecutivo NUMERIC(18,0)		= 0,
 	@saldoDocumento NUMERIC(18,0)	= 0,
@@ -51,6 +52,7 @@ BEGIN
 				INSERT INTO [Provision] (
 											[idEmpresa],
 											[idSucursal],
+											[idFinanciera],
 											[CCP_DOCUMENTO],
 											[consecutivo],
 											[saldoDocumento],
@@ -62,6 +64,7 @@ BEGIN
 				VALUES	(
 							@idEmpresa,
 							@idSucursal,
+							@idFinanciera,
 							@CCP_IDDOCTO,
 							@consecutivo,
 							@saldoDocumento,

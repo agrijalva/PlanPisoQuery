@@ -8,6 +8,7 @@ GO
 -- Author:		Ing. Alejandro Grijalva Antonio
 -- Create date: 2018-03-09
 -- Description:	Creacion de provision de conciliación
+-- [dbo].[CONC_GENERAPROVISION_SP] 3, 2018
 -- =============================================
 ALTER PROCEDURE [dbo].[CONC_GENERAPROVISION_SP]
 	@periodo INT = 0,
@@ -16,7 +17,7 @@ AS
 BEGIN
 	--DECLARE @periodo INT = 3;
 	--DECLARE @anio INT = 2018;
-
+	
 	SET NOCOUNT ON;
 	DECLARE @mes NVARCHAR(15)
 	SELECT @mes = CASE 
@@ -51,7 +52,7 @@ BEGIN
 	SELECT 
 		ROW_NUMBER() OVER(ORDER BY empresaid ASC) AS RowNum,
 		empresaID,
-		sucursalID,
+		sucursalID = ( SELECT idSucursal FROM Documentos WHERE CCP_IDDOCTO = MOV.CCP_IDDOCTO),
 		financieraID,
 		MOV.CCP_IDDOCTO,
 		cuantos,
@@ -59,9 +60,9 @@ BEGIN
 		DET.interesFinanciera,
 		DET.interesAjuste
 	FROM (
-		SELECT  m.empresaID, m.sucursalID, m.financieraID, m.CCP_IDDOCTO, COUNT(*) cuantos
+		SELECT  m.empresaID, m.financieraID, m.CCP_IDDOCTO, COUNT(*) cuantos
 		FROM [PlanPiso].[dbo].[Movimiento] m 
-		GROUP BY m.empresaID, m.sucursalID, m.financieraID, m.CCP_IDDOCTO ) MOV
+		GROUP BY m.empresaID, m.financieraID, m.CCP_IDDOCTO ) MOV
 	INNER JOIN [PlanPiso].[dbo].[relPolizasCierreMes] POL ON MOV.CCP_IDDOCTO		= POL.CCP_IDDOCTO
 	INNER JOIN [PlanPiso].[dbo].[conciliacionDetalle] DET ON DET.CCP_IDDOCTO	= POL.CCP_IDDOCTO
 	INNER JOIN [PlanPiso].[dbo].[conciliacion]		  CON ON DET.idConciliacion = CON.idConciliacion
@@ -78,6 +79,8 @@ BEGIN
 	SET @icontador = 1 
 
 	SELECT @totalregistos = COUNT(*) FROM @plp_planpisoenc;
+
+	DECLARE @CCP_IDDOCTO VARCHAR(50) = ''
 
 	WHILE @icontador <= @totalregistos 
 		BEGIN 
@@ -118,7 +121,7 @@ BEGIN
 				[tipoProcesoId] = 5
 			FROM @plp_planpisoenc MOV
 			INNER JOIN financiera FIN on MOV.financieraID = FIN.financieraID
-			WHERE MOV.rownumber = @icontador
+			WHERE MOV.rownumber = @icontador			
 
 			SELECT
 				[Row]					= ROW_NUMBER() OVER(ORDER BY MOV.vin ASC),
@@ -139,7 +142,7 @@ BEGIN
 			INTO #InteresesCargos
 			FROM [PlanPiso].[dbo].[Movimiento]	MOV 
 			INNER JOIN @plp_planpisoenc			PLP ON MOV.empresaID = PLP.empresaid		 AND MOV.financieraID = PLP.financieraid 
-													   AND MOV.sucursalID = PLP.sucursalid 	 AND MOV.CCP_IDDOCTO = PLP.CCP_IDDOCTO
+													   AND MOV.CCP_IDDOCTO = PLP.CCP_IDDOCTO
 			INNER JOIN Interes					INT ON MOV.movimientoID = INT.movimientoID
 			INNER JOIN financiera				FIN ON MOV.financieraID = FIN.financieraID
 			WHERE	rownumber = @icontador
@@ -152,7 +155,7 @@ BEGIN
 				SELECT
 					SUM(i.monto) TOTAL
 				FROM [PlanPiso].[dbo].[Movimiento] m 
-				INNER JOIN @plp_planpisoenc p on m.empresaID=p.empresaid and m.financieraID=p.financieraid and m.sucursalID=p.sucursalid and m.CCP_IDDOCTO=p.CCP_IDDOCTO
+				INNER JOIN @plp_planpisoenc p on m.empresaID=p.empresaid and m.financieraID=p.financieraid and m.CCP_IDDOCTO=p.CCP_IDDOCTO
 				INNER JOIN Interes i on m.movimientoID=i.movimientoID
 				INNER JOIN financiera f on m.financieraID=f.financieraID
 				WHERE rownumber=@icontador  and month(i.fecha)=month(GETDATE())
@@ -166,6 +169,13 @@ BEGIN
 			)
 
 			DECLARE @diferencia NUMERIC(18,2) = ( @interezAjuste - @interezGA );
+			select @diferencia diferencia, @interezAjuste interezAjuste, @interezGA interezGA ;
+			
+			SELECT @CCP_IDDOCTO = MOV.CCP_IDDOCTO
+			FROM @plp_planpisoenc MOV
+			WHERE MOV.rownumber = @icontador;
+			
+			EXEC [dbo].[CONC_INTERESAJUSTE_SP] @periodo, @anio, @interezAjuste, @CCP_IDDOCTO;
 			
 			DECLARE @curCargo INT = 0, @maxCargo INT = 0;
 			SELECT @curCargo = MIN(Row), @maxCargo = MAX(Row) FROM #InteresesCargos;
@@ -232,7 +242,7 @@ BEGIN
 			INTO #InteresesAbonos
 			FROM [PlanPiso].[dbo].[Movimiento]	MOV 
 			INNER JOIN @plp_planpisoenc			PLP ON MOV.empresaID = PLP.empresaid		AND MOV.financieraID = PLP.financieraid 
-													   AND MOV.sucursalID = PLP.sucursalid	AND MOV.CCP_IDDOCTO = PLP.CCP_IDDOCTO
+													   AND MOV.CCP_IDDOCTO = PLP.CCP_IDDOCTO
 			INNER JOIN Interes					INT ON MOV.movimientoID = INT.movimientoID
 			INNER JOIN financiera				FIN ON MOV.financieraID = FIN.financieraID
 			WHERE rownumber = @icontador 
