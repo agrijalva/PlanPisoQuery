@@ -1,8 +1,5 @@
 USE [PlanPiso];
 
-DECLARE @periodo INT = 3;
-DECLARE @anio INT = 2018;
-
 SET NOCOUNT ON;
 DECLARE @mes NVARCHAR(15)
 SELECT @mes = CASE 
@@ -51,9 +48,10 @@ FROM (
 INNER JOIN [PlanPiso].[dbo].[relPolizasCierreMes] POL ON MOV.CCP_IDDOCTO		= POL.CCP_IDDOCTO
 INNER JOIN [PlanPiso].[dbo].[conciliacionDetalle] DET ON DET.CCP_IDDOCTO	= POL.CCP_IDDOCTO
 INNER JOIN [PlanPiso].[dbo].[conciliacion]		  CON ON DET.idConciliacion = CON.idConciliacion
-WHERE	CON.periodo = @periodo
-		AND CON.anio = @anio
+WHERE	CON.periodo = 3 
+		AND CON.anio = 2018 
 		AND situacion IN (1,2);
+
 
 DECLARE @totalregistos   INT, 
         @icontador       INT ,
