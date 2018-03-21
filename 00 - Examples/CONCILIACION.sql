@@ -81,6 +81,9 @@ SELECT * FROM [PlanPiso].[dbo].[relPolizasCierreMes]
 SELECT * FROM dbo.plp_planpisoenc
 SELECT * FROM dbo.plp_planpisodet
 
+ --DELETE FROM plp_planpisoenc WHERE ple_idplanpiso > 5
+ --DELETE FROM plp_planpisodet WHERE ple_idplanpiso > 5
+
 -- UPDATE [PlanPiso].[dbo].[relPolizasCierreMes] SET mes = 2
 
 --SELECT * FROM conciliacion
@@ -91,8 +94,12 @@ SELECT * FROM dbo.plp_planpisodet
 -- UPDATE autorizaConciliacion SET estatus = 2
 
 
+--DELETE FROM plp_planpisoenc WHERE ple_idplanpiso > 5
+--DELETE FROM plp_planpisodet WHERE ple_idplanpiso > 5
 --TRUNCATE TABLE conciliacion
 --TRUNCATE TABLE conciliacionDetalle
 --TRUNCATE TABLE TmpExcelData
 --TRUNCATE TABLE autorizaConciliacion
+--TRUNCATE TABLE relPolizasCierreMes
+
 
