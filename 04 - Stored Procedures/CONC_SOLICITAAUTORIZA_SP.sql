@@ -9,6 +9,7 @@ GO
 -- =============================================
 ALTER PROCEDURE [dbo].[CONC_SOLICITAAUTORIZA_SP]
 	@consecutivo	 INT = 0,
+	@estatus		 INT = 1,
 	@idUsuario		 INT = 0,
 	@idFinanciera	 INT = 0,
 	@periodoContable INT = 0,
@@ -30,7 +31,7 @@ BEGIN
 		[periodoContable]   = @periodoContable,
 		[anio]				= @anioContable,
 		[consecutivo]		= @consecutivo,		
-		[estatus]			= 1,
+		[estatus]			= @estatus,
 		[idUsuarioSolicita]	= @idUsuario,
 		[fechaSolicitud]	= GETDATE(),
 		[idUsuarioAutoriza]	= NULL,

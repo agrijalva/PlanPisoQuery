@@ -137,8 +137,7 @@ BEGIN
 				[pld_vin]				= MOV.vin,
 				[pld_fechavencimiento]	= GETDATE(),
 				[pld_porcentajeiva]		= 0,
-				[pld_afecta]			= 1,
-				[idProvision]			= 0
+				[pld_afecta]			= 1
 			INTO #InteresesCargos
 			FROM [PlanPiso].[dbo].[Movimiento]	MOV 
 			INNER JOIN @plp_planpisoenc			PLP ON MOV.empresaID = PLP.empresaid		 AND MOV.financieraID = PLP.financieraid 
@@ -200,8 +199,7 @@ BEGIN
 					         ,[pld_vin]
 					         ,[pld_fechavencimiento]
 					         ,[pld_porcentajeiva]
-					         ,[pld_afecta]
-					         ,[idProvision])
+					         ,[pld_afecta])
 					SELECT
 						[ple_idplanpiso],
 						[pld_consecutivo],
@@ -215,8 +213,7 @@ BEGIN
 						[pld_vin],
 						[pld_fechavencimiento],
 						[pld_porcentajeiva],
-						[pld_afecta],
-						[idProvision]
+						[pld_afecta]
 					FROM #InteresesCargos WHERE Row = @curCargo;
 					SET @curCargo = @curCargo + 1;
 				END
@@ -237,8 +234,7 @@ BEGIN
 				[pld_vin]  				= MOV.vin,
 				[pld_fechavencimiento] 	= GETDATE(),
 				[pld_porcentajeiva]  	= 0,
-				[pld_afecta]  			= 1,
-				[idProvision]  			= 0
+				[pld_afecta]  			= 1
 			INTO #InteresesAbonos
 			FROM [PlanPiso].[dbo].[Movimiento]	MOV 
 			INNER JOIN @plp_planpisoenc			PLP ON MOV.empresaID = PLP.empresaid		AND MOV.financieraID = PLP.financieraid 
@@ -272,8 +268,7 @@ BEGIN
 					         ,[pld_vin]
 					         ,[pld_fechavencimiento]
 					         ,[pld_porcentajeiva]
-					         ,[pld_afecta]
-					         ,[idProvision])
+					         ,[pld_afecta])
 					SELECT
 						[ple_idplanpiso],
 						[pld_consecutivo],
@@ -287,8 +282,7 @@ BEGIN
 						[pld_vin],
 						[pld_fechavencimiento],
 						[pld_porcentajeiva],
-						[pld_afecta],
-						[idProvision]
+						[pld_afecta]
 					FROM #InteresesAbonos WHERE Row = @curAbono;
 					SET @curAbono = @curAbono + 1;
 				END

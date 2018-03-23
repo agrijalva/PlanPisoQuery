@@ -22,6 +22,6 @@ BEGIN
 		[fechaAutoriza]
 	FROM [PlanPiso].[dbo].[autorizaConciliacion] CON
 	INNER JOIN [PlanPiso].[dbo].[Financiera] FIN ON CON.idFinanciera = FIN.financieraID
-	INNER JOIN [PlanPiso].[dbo].[estatusNotificacion] EST ON CON.estatus = EST.idEstatusNotificacion
+	LEFT JOIN [PlanPiso].[dbo].[estatusNotificacion] EST ON CON.estatus = EST.idEstatusNotificacion
 END
 GO

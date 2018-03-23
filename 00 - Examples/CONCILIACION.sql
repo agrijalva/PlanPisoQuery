@@ -1,6 +1,6 @@
 DECLARE @periodo INT = 2;
 
-SELECT 	
+SELECT
 	movimientoID	= MOV.movimientoID,
 	porcentajeTiie	= 0,
 	monto			= CONCILIA.interesAjuste,
@@ -86,10 +86,11 @@ SELECT * FROM dbo.plp_planpisodet
 
 -- UPDATE [PlanPiso].[dbo].[relPolizasCierreMes] SET mes = 2
 
---SELECT * FROM conciliacion
---SELECT * FROM conciliacionDetalle
---SELECT * FROM TmpExcelData
---SELECT * FROM autorizaConciliacion
+SELECT * FROM conciliacion
+SELECT * FROM conciliacionDetalle
+SELECT * FROM TmpExcelData
+SELECT * FROM autorizaConciliacion
+SELECT * FROM relPolizasCierreMes
 
 -- UPDATE autorizaConciliacion SET estatus = 2
 
@@ -107,3 +108,7 @@ SELECT * FROM GAAU_Concentra..UNI_TRASPASOS WHERE TRA_NUMTRASPASO = 1522
 
 -- SELECT * FROM plp_planpisoenc
 TRUNCATE TABLE Provision
+
+SELECT * FROM relPolizasCierreMes;
+SELECT * FROM estatusNotificacion
+
